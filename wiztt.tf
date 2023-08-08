@@ -18,7 +18,10 @@ resource "aws_subnet" "private_subnet" {
   cidr_block              = "10.0.2.0/24"  
   availability_zone      = "us-east-2a"    
 }
-resource "aws_nat_gateway" "nat_gateway" {
+resource "aws_internet_gateway" "wiztt_internet_gateway" {
+  vpc_id = aws_vpc.wiztt_vpc.id
+}
+resource "aws_nat_gateway" "wiztt_nat_gateway" {
   allocation_id = aws_eip.nat_eip.id
   subnet_id     = aws_subnet.public_subnet.id
 }
@@ -27,6 +30,11 @@ resource "aws_eip" "nat_eip" {
 }
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.wiztt_vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.wiztt_internet_gateway.id
+  }
 }
 resource "aws_route" "public_route" {
   route_table_id         = aws_route_table.public_route_table.id
@@ -87,7 +95,7 @@ resource "aws_iam_policy" "wiztt_create_delete_vm" {
     ]
   })
 }
-# Creates a role that can be assumed by any ec2 instance
+#Creates a role that can be assumed by any ec2 instance
 resource "aws_iam_role" "wiztt_mongodb_vm" {
   name = "MongoVMHighPermissions"
 
