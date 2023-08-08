@@ -63,7 +63,7 @@ resource "aws_security_group" "wiztt_private" {
     from_port   = 0
     to_port     = 65535
     protocol    = "tcp"
-    security_groups = aws_security_group.wiztt_public.id
+    security_groups = [aws_security_group.wiztt_public.id]
   }
 }
 resource "aws_key_pair" "wiztt_ssh" {
@@ -112,7 +112,7 @@ resource "aws_instance" "mongo_vm" {
   ami           = "ami-0c59e1c7ac3ddd66d"  #old linix ami: amzn2-ami-kernel-5.10-hvm-2.0.20211001.1-x86_64-ebs
   instance_type = "t2.large"
   subnet_id     = aws_subnet.public_subnet.id
-  vpc_security_group_ids = aws_security_group.wiztt_public.id
+  vpc_security_group_ids = [aws_security_group.wiztt_public.id]
   key_name = "wiztt_ssh"
 
   iam_instance_profile = aws_iam_role.wiztt_mongodb_vm.name #assumes the high permission role
