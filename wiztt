@@ -67,8 +67,8 @@ resource "aws_security_group" "wiztt_private" {
   }
 }
 resource "aws_key_pair" "wiztt_ssh" {
-  key_name   = "wiztt_ssh"  # Update with your desired key name
-  public_key = file("wiztt_public.pub")  # Path to your public key file
+  key_name   = "wiztt_ssh"
+  public_key = file("wiztt_public.pub")
 }
 ################################################################################################
 # This section creates the VM, installs MongoDB and assigns the high permissions to the VM
