@@ -68,7 +68,7 @@ resource "aws_security_group" "wiztt_private" {
 }
 resource "aws_key_pair" "wiztt_ssh" {
   key_name   = "wiztt_ssh"
-  public_key = file("wiztt_public.pub")
+  public_key = file("./keys/wiztt_public.pub")
 }
 ################################################################################################
 # This section creates the VM, installs MongoDB and assigns the high permissions to the VM
@@ -128,16 +128,20 @@ resource "null_resource" "provision_mongo" {
   }
   provisioner "remote-exec" {
     inline = [
-      "sudo apt-get update",
-      "sudo apt-get install -y mongodb=6.0"]  # outdated mongo db
+      "sudo yum update -y",
+      "sudo amazon-linux-extras enable mongodb4.4",
+      "sudo yum install -y mongodb-org"]  # use aws package manager for outdated mongo db install
     connection {
       type        = "ssh"
-      user        = "admin"  # update with your appropriate username
-      private_key = file("path/to/your/private/key.pem")  # update with the path to your private key
+      user        = "ec2-user"
+      private_key = file("./Keys/wiztt_private.pem")
       host        = aws_instance.mongo_vm.public_ip
     }
   }
 }
+################################################################################################
+# This section creates the S3 bucket
+################################################################################################
 output "public_subnet_id" {
   value = aws_subnet.public_subnet.id
 }
