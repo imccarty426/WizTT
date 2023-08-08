@@ -48,8 +48,6 @@ resource "aws_security_group" "wiztt_public" {
   name        = "wiztt-public"
   description = "Security group to allow all traffic"
   vpc_id = aws_vpc.wiztt_vpc.id
-
-#Ingress rule to allow all incoming traffic
   ingress {
     from_port = 0
     to_port   = 65535
@@ -61,13 +59,16 @@ resource "aws_security_group" "wiztt_private" {
   name        = "wiztt-private"
   description = "Security group to allow traffic from the private subnet"
   vpc_id = aws_vpc.wiztt_vpc.id
-#Ingress rule to allow incoming traffic from the private subnet
   ingress {
     from_port   = 0
     to_port     = 65535
     protocol    = "tcp"
-    security_groups = [aws_security_group.wiztt_public.id]  // Allow traffic from wiztt-public SG
+    security_groups = aws_security_group.wiztt_public.id
   }
+}
+resource "aws_key_pair" "wiztt_ssh" {
+  key_name   = "wiztt_ssh"  # Update with your desired key name
+  public_key = file("wiztt_public.pub")  # Path to your public key file
 }
 ################################################################################################
 # This section creates the VM, installs MongoDB and assigns the high permissions to the VM
